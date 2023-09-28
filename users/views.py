@@ -1,4 +1,7 @@
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.views import View
 from django.contrib.auth import login, logout, authenticate
 from .forms import RegisterForm, LoginForm
@@ -57,8 +60,17 @@ class LoginView(View):
                 form.add_error(None, 'Неверные учетные данные. Пожалуйста, попробуйте еще раз.')
 
         return render(request, self.template_name, {'form': form})
-    #
-    # def get_success_url(self):
-    #     # Возвращает URL-шаблон, на который нужно перенаправить пользователя после успешного логина
-    #     return reverse(
-    #         'quotes:root')  # Здесь 'quotes:root' - это имя URL-шаблона, на который нужно перенаправить пользователя
+
+
+class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'users/password_reset.html'
+    email_template_name = 'users/password_reset_email.html'
+    html_email_template_name = 'users/password_reset_email.html'
+    success_url = reverse_lazy('users:password_reset_done')
+    success_message = "An email with instructions to reset your password has been sent to %(email)s."
+    subject_template_name = 'users/password_reset_subject.txt'
+#
+# def get_success_url(self):
+#     # Возвращает URL-шаблон, на который нужно перенаправить пользователя после успешного логина
+#     return reverse(
+#         'quotes:root')  # Здесь 'quotes:root' - это имя URL-шаблона, на который нужно перенаправить пользователя
